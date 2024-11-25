@@ -10,9 +10,18 @@ import './i18n';
 
 function App() {
   return (
-    <ThemeProvider attribute="class">
-      <div className="min-h-screen bg-white dark:bg-gray-800">
-        <Toaster position="top-center" />
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <div className="min-h-screen relative">
+        <Toaster 
+          position="top-center"
+          toastOptions={{
+            className: 'bg-white dark:bg-gray-800 dark:text-white',
+            style: {
+              background: 'var(--toast-bg)',
+              color: 'var(--toast-color)',
+            },
+          }} 
+        />
         <Navbar />
         <Cart />
         <Hero />

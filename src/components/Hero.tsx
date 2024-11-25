@@ -1,44 +1,56 @@
-import React from 'react';
-import { ArrowLeft, ShoppingBag } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function Hero() {
+  const { t } = useTranslation();
+
   return (
-    <div className="relative h-screen">
+    <div className="relative min-h-[600px] h-[100svh]">
+      {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
-          className="w-full h-full object-cover"
+          src="https://images.unsplash.com/photo-1441986300917-64674bd600d8"
           alt="JAGUAR Fashion"
+          className="w-full h-full object-cover"
+          loading="eager"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/50"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/30" />
       </div>
-      <div className="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8 h-full flex items-center">
-        <div className="text-center text-white mx-auto">
-          <div className="flex justify-center mb-8">
-            <ShoppingBag className="h-16 w-16" />
-          </div>
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl mb-4">
+
+      {/* Content */}
+      <div className="relative h-full container-custom px-4 sm:px-6">
+        <div className="h-full flex flex-col justify-center items-center max-w-2xl mx-auto pt-16 sm:pt-20">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 sm:mb-6 text-center leading-tight">
             JAGUAR
           </h1>
-          <p className="mt-6 text-xl max-w-3xl mx-auto text-gray-300">
-            أحدث صيحات الموضة والأزياء العصرية في بنها
+          <p className="text-lg sm:text-xl text-white/90 mb-6 sm:mb-8 font-light text-center max-w-lg">
+            {t('hero.subtitle')}
           </p>
-          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto">
             <a
               href="#products"
-              className="inline-flex items-center px-8 py-3 border-2 border-white text-base font-medium rounded-full text-white hover:bg-white hover:text-black transition-all duration-300"
+              className="px-6 py-3 bg-white text-black hover:bg-black hover:text-white
+                transition-colors duration-300 rounded-full font-medium
+                flex items-center justify-center gap-2 min-w-[160px]"
             >
-              تسوق الآن
-              <ArrowLeft className="mr-2 h-5 w-5" />
+              {t('hero.shop')}
+              <ArrowRight className="h-5 w-5" />
             </a>
             <a
               href="#contact"
-              className="inline-flex items-center px-8 py-3 border-2 border-transparent text-base font-medium rounded-full text-black bg-white hover:bg-gray-100 transition-all duration-300"
+              className="px-6 py-3 bg-black/20 backdrop-blur-sm border border-white/50
+                text-white hover:bg-white hover:text-black transition-colors duration-300
+                rounded-full font-medium text-center min-w-[160px]"
             >
-              تواصل معنا
+              {t('hero.contact')}
             </a>
           </div>
         </div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 hidden sm:block">
+        <div className="w-[1px] h-16 bg-white/30 animate-pulse" />
       </div>
     </div>
   );

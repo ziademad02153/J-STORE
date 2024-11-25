@@ -162,10 +162,10 @@ const arabicCategories = ['الكل', 'جواكت', 'بناطيل', 'شورتا�
 
 export default function FeaturedProducts() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [hoveredProduct, setHoveredProduct] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const addItem = useCartStore((state) => state.addItem);
-  const { t, i18n } = useTranslation();
+  const toggleCart = useCartStore((state) => state.toggleCart);
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     setTimeout(() => setIsLoading(false), 800);
@@ -183,7 +183,8 @@ export default function FeaturedProducts() {
       image: product.image
     };
     addItem(cartItem);
-    toast.success(t('addedToCart'), {
+    toggleCart();
+    toast.success(i18n.dir() === 'rtl' ? 'تمت الإضافة إلى السلة' : 'Added to cart', {
       position: i18n.dir() === 'rtl' ? 'top-left' : 'top-right',
       style: {
         background: '#10B981',
@@ -202,81 +203,74 @@ export default function FeaturedProducts() {
   }
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-300">
-      {/* فئات المنتجات */}
-      <div className="container mx-auto px-4 mb-8">
-        <div className="flex flex-wrap gap-4 justify-center">
-          {categories.map((category, index) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`
-                px-6 py-2.5 rounded-full text-sm font-medium
-                transition-all duration-300 transform hover:scale-105
-                ${selectedCategory === category
-                  ? 'bg-emerald-500 text-white shadow-lg hover:bg-emerald-600'
-                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-gray-700'
-                }
-              `}
-            >
-              {i18n.dir() === 'rtl' ? arabicCategories[index] : category}
-            </button>
-          ))}
+    <div id="products" className="py-12 sm:py-16 md:py-20">
+      <div className="container-custom px-4 sm:px-6">
+        {/* فئات المنتجات */}
+        <div className="mb-8 sm:mb-12">
+          <div className="flex flex-wrap gap-2 sm:gap-4 justify-center">
+            {categories.map((category, index) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`
+                  px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm font-medium
+                  transition-all duration-300 transform hover:scale-105
+                  ${selectedCategory === category
+                    ? 'bg-emerald-500 text-white shadow-lg hover:bg-emerald-600'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-gray-700 shadow-sm'
+                  }
+                `}
+              >
+                {i18n.dir() === 'rtl' ? arabicCategories[index] : category}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* شبكة المنتجات */}
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        {/* شبكة المنتجات */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className={`
-                bg-white dark:bg-gray-800 rounded-2xl shadow-sm
-                transform transition-all duration-300
-                hover:shadow-xl hover:-translate-y-1
-                ${hoveredProduct === product.id ? 'scale-[1.02]' : ''}
-              `}
-              onMouseEnter={() => setHoveredProduct(product.id)}
-              onMouseLeave={() => setHoveredProduct(null)}
+              className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden group
+                shadow-sm hover:shadow-md transition-shadow duration-300"
             >
               {/* صورة المنتج */}
-              <div className="relative overflow-hidden rounded-t-2xl group">
+              <div className="relative overflow-hidden aspect-[4/5]">
                 <img
                   src={product.image}
                   alt={i18n.dir() === 'rtl' ? product.arabicName : product.name}
-                  className="w-full h-72 object-cover transform transition-transform duration-500 group-hover:scale-110"
+                  className="w-full h-full object-cover transform transition-transform duration-500 
+                    group-hover:scale-110"
+                  loading="lazy"
                 />
                 {/* زر إضافة إلى السلة */}
                 <button
                   onClick={() => handleAddToCart(product)}
-                  className={`
-                    absolute bottom-4 ${i18n.dir() === 'rtl' ? 'left-4' : 'right-4'}
-                    bg-emerald-500 text-white p-3 rounded-full
-                    transform transition-all duration-300
-                    translate-y-12 opacity-0 group-hover:translate-y-0 group-hover:opacity-100
-                    hover:bg-emerald-600 hover:scale-110
-                  `}
+                  className="absolute bottom-4 right-4 bg-emerald-500 text-white p-2.5 sm:p-3 rounded-full
+                    transform transition-all duration-300 translate-y-12 opacity-0 group-hover:translate-y-0 
+                    group-hover:opacity-100 hover:bg-emerald-600 hover:scale-110 focus:outline-none
+                    focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                  aria-label="Add to cart"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
                 </button>
               </div>
 
               {/* تفاصيل المنتج */}
-              <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+              <div className="p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-white mb-1 sm:mb-2
+                  line-clamp-1">
                   {i18n.dir() === 'rtl' ? product.arabicName : product.name}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 sm:mb-4
+                  line-clamp-2 min-h-[2.5rem]">
                   {i18n.dir() === 'rtl' ? product.arabicDescription : product.description}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-emerald-500 font-bold">{product.price}</span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {i18n.dir() === 'rtl' ? product.arabicColor : product.color}
-                  </span>
+                  <span className="text-emerald-500 font-bold text-base sm:text-lg">{product.price}</span>
                 </div>
               </div>
             </div>
