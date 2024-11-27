@@ -20,10 +20,12 @@ export default function Hero() {
       {/* Content */}
       <div className="relative h-full container-custom px-4 sm:px-6">
         <div className="h-full flex flex-col justify-center items-center max-w-2xl mx-auto pt-16 sm:pt-20">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 sm:mb-6 text-center leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 sm:mb-6 text-center leading-tight
+            drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
             JAGUAR
           </h1>
-          <p className="text-lg sm:text-xl text-white/90 mb-6 sm:mb-8 font-light text-center max-w-lg">
+          <p className="text-lg sm:text-xl text-white mb-6 sm:mb-8 font-light text-center max-w-lg
+            drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
             {t('hero.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto">

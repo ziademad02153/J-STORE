@@ -1,4 +1,4 @@
-import { X, Minus, Plus, ShoppingBag, Truck, CreditCard, Check } from 'lucide-react';
+import { X, Minus, Plus, ShoppingBag, Truck, Check } from 'lucide-react';
 import { useCartStore } from '../store/cartStore';
 import { useState } from 'react';
 
@@ -18,7 +18,6 @@ export default function Cart() {
     address: '',
     city: ''
   });
-  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('cash');
 
   const total = items.reduce((sum, item) => {
     const price = parseFloat(item.price.replace(' ج.م', ''));
@@ -30,6 +29,15 @@ export default function Cart() {
       ...deliveryInfo,
       [e.target.name]: e.target.value
     });
+  };
+
+  const isDeliveryInfoComplete = () => {
+    return (
+      deliveryInfo.name.trim() !== '' &&
+      deliveryInfo.phone.trim() !== '' &&
+      deliveryInfo.address.trim() !== '' &&
+      deliveryInfo.city.trim() !== ''
+    );
   };
 
   const handleCheckout = () => {
@@ -48,7 +56,7 @@ ${orderDetails}
 العنوان: ${deliveryInfo.address}
 المدينة: ${deliveryInfo.city}
 ---------------------------
-طريقة الدفع: ${paymentMethod === 'cash' ? 'كاش عند الاستلام' : 'بطاقة ائتمان'}
+طريقة الدفع: الدفع عند الاستلام
 الإجمالي: ${total} ج.م
     `;
     window.open(
@@ -57,19 +65,15 @@ ${orderDetails}
     );
   };
 
-  const isDeliveryInfoComplete = () => {
-    return Object.values(deliveryInfo).every(value => value.trim() !== '');
-  };
-
   if (!isCartOpen) return null;
 
   const renderStep = () => {
-    switch(checkoutStep) {
+    switch (checkoutStep) {
       case 1:
         return (
           <div className="flex-1 overflow-y-auto p-4">
             {items.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-gray-500">
+              <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-400">
                 <ShoppingBag className="h-16 w-16 mb-4" />
                 <p className="text-lg">سلة التسوق فارغة</p>
               </div>
@@ -78,40 +82,37 @@ ${orderDetails}
                 {items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
+                    className="flex items-center space-x-4 space-x-reverse bg-gray-50 dark:bg-gray-800 p-4 rounded-lg"
                   >
                     <img
                       src={item.image}
                       alt={item.name}
                       className="w-20 h-20 object-cover rounded-md"
                     />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-gray-900 truncate">
-                        {item.name}
-                      </h3>
-                      <p className="text-gray-600">{item.price}</p>
-                      <div className="flex items-center gap-2 mt-2">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{item.name}</h3>
+                      <p className="text-gray-600 dark:text-gray-300">{item.price}</p>
+                      <div className="flex items-center space-x-2 space-x-reverse mt-2">
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          disabled={item.quantity <= 1}
-                          className="p-1 hover:bg-gray-200 rounded transition-colors disabled:opacity-50"
+                          onClick={() => updateQuantity(item.id, Math.max(0, item.quantity - 1))}
+                          className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
                         >
-                          <Minus className="h-4 w-4" />
+                          <Minus className="h-4 w-4 dark:text-white" />
                         </button>
-                        <span className="w-8 text-center">{item.quantity}</span>
+                        <span className="dark:text-white">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="p-1 hover:bg-gray-200 rounded transition-colors"
+                          className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
                         >
-                          <Plus className="h-4 w-4" />
+                          <Plus className="h-4 w-4 dark:text-white" />
                         </button>
                       </div>
                     </div>
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                      className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full"
                     >
-                      <X className="h-5 w-5" />
+                      <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                     </button>
                   </div>
                 ))}
@@ -123,7 +124,7 @@ ${orderDetails}
         return (
           <div className="flex-1 overflow-y-auto p-4">
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold mb-4">معلومات التوصيل</h3>
+              <h3 className="text-lg font-semibold mb-4 dark:text-white">معلومات التوصيل</h3>
               <div className="space-y-4">
                 <input
                   type="text"
@@ -131,7 +132,7 @@ ${orderDetails}
                   placeholder="الاسم الكامل"
                   value={deliveryInfo.name}
                   onChange={handleDeliveryInfoChange}
-                  className="w-full p-2 border rounded-lg"
+                  className="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white dark:border-gray-600"
                 />
                 <input
                   type="tel"
@@ -139,7 +140,7 @@ ${orderDetails}
                   placeholder="رقم الهاتف"
                   value={deliveryInfo.phone}
                   onChange={handleDeliveryInfoChange}
-                  className="w-full p-2 border rounded-lg"
+                  className="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white dark:border-gray-600"
                 />
                 <input
                   type="text"
@@ -147,7 +148,7 @@ ${orderDetails}
                   placeholder="العنوان التفصيلي"
                   value={deliveryInfo.address}
                   onChange={handleDeliveryInfoChange}
-                  className="w-full p-2 border rounded-lg"
+                  className="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white dark:border-gray-600"
                 />
                 <input
                   type="text"
@@ -155,7 +156,7 @@ ${orderDetails}
                   placeholder="المدينة"
                   value={deliveryInfo.city}
                   onChange={handleDeliveryInfoChange}
-                  className="w-full p-2 border rounded-lg"
+                  className="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white dark:border-gray-600"
                 />
               </div>
             </div>
@@ -165,26 +166,18 @@ ${orderDetails}
         return (
           <div className="flex-1 overflow-y-auto p-4">
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold mb-4">طريقة الدفع</h3>
+              <h3 className="text-lg font-semibold mb-4 dark:text-white">طريقة الدفع</h3>
               <div className="space-y-4">
-                <button
-                  onClick={() => setPaymentMethod('cash')}
-                  className={`w-full p-4 border rounded-lg flex items-center gap-3 ${
-                    paymentMethod === 'cash' ? 'border-black bg-gray-50' : ''
-                  }`}
-                >
-                  {paymentMethod === 'cash' && <Check className="h-5 w-5" />}
-                  <span>الدفع عند الاستلام</span>
-                </button>
-                <button
-                  onClick={() => setPaymentMethod('card')}
-                  className={`w-full p-4 border rounded-lg flex items-center gap-3 ${
-                    paymentMethod === 'card' ? 'border-black bg-gray-50' : ''
-                  }`}
-                >
-                  {paymentMethod === 'card' && <Check className="h-5 w-5" />}
-                  <span>بطاقة ائتمان</span>
-                </button>
+                <div className="w-full p-4 border dark:border-gray-700 rounded-lg flex items-center gap-3 bg-gray-50 dark:bg-gray-800">
+                  <Check className="h-5 w-5 text-black dark:text-white" />
+                  <Truck className="h-5 w-5 text-black dark:text-white" />
+                  <span className="text-gray-900 dark:text-white">الدفع عند الاستلام</span>
+                </div>
+                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
+                    سيتم الدفع نقداً عند استلام الطلب
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -193,46 +186,51 @@ ${orderDetails}
         return (
           <div className="flex-1 overflow-y-auto p-4">
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold mb-4">ملخص الطلب</h3>
+              <h3 className="text-lg font-semibold mb-4 dark:text-white">ملخص الطلب</h3>
               <div className="space-y-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-medium mb-2">المنتجات:</h4>
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                  <h4 className="font-medium mb-2 text-gray-900 dark:text-white">المنتجات:</h4>
                   {items.map((item) => (
                     <div key={item.id} className="flex justify-between py-1">
-                      <span>{item.name} (×{item.quantity})</span>
-                      <span>{parseFloat(item.price.replace(' ج.م', '')) * item.quantity} ج.م</span>
+                      <span className="text-gray-700 dark:text-gray-300">
+                        {item.name} (×{item.quantity})
+                      </span>
+                      <span className="text-gray-700 dark:text-gray-300">
+                        {parseFloat(item.price.replace(' ج.م', '')) * item.quantity} ج.م
+                      </span>
                     </div>
                   ))}
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-medium mb-2">معلومات التوصيل:</h4>
-                  <p>الاسم: {deliveryInfo.name}</p>
-                  <p>الهاتف: {deliveryInfo.phone}</p>
-                  <p>العنوان: {deliveryInfo.address}</p>
-                  <p>المدينة: {deliveryInfo.city}</p>
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                  <h4 className="font-medium mb-2 text-gray-900 dark:text-white">معلومات التوصيل:</h4>
+                  <p className="text-gray-700 dark:text-gray-300">الاسم: {deliveryInfo.name}</p>
+                  <p className="text-gray-700 dark:text-gray-300">الهاتف: {deliveryInfo.phone}</p>
+                  <p className="text-gray-700 dark:text-gray-300">العنوان: {deliveryInfo.address}</p>
+                  <p className="text-gray-700 dark:text-gray-300">المدينة: {deliveryInfo.city}</p>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-medium mb-2">طريقة الدفع:</h4>
-                  <p>{paymentMethod === 'cash' ? 'الدفع عند الاستلام' : 'بطاقة ائتمان'}</p>
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                  <h4 className="font-medium mb-2 text-gray-900 dark:text-white">طريقة الدفع:</h4>
+                  <p className="text-gray-700 dark:text-gray-300">الدفع عند الاستلام</p>
                 </div>
               </div>
             </div>
           </div>
         );
+      default:
+        return null;
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
-      <div className="fixed inset-y-0 right-0 max-w-md w-full bg-white shadow-xl transform transition-transform duration-300 ease-in-out">
-        <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="p-4 border-b">
+    <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-50">
+      <div className="fixed inset-y-0 right-0 w-full sm:w-[400px] bg-white dark:bg-gray-900 shadow-xl transform transition-transform duration-300 ease-in-out">
+        <div className="h-full flex flex-col">
+          <div className="p-4 border-b dark:border-gray-800">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold flex items-center gap-2">
+              <h2 className="text-xl font-bold flex items-center gap-2 text-gray-900 dark:text-white">
                 {checkoutStep === 1 && <ShoppingBag className="h-5 w-5" />}
                 {checkoutStep === 2 && <Truck className="h-5 w-5" />}
-                {checkoutStep === 3 && <CreditCard className="h-5 w-5" />}
+                {checkoutStep === 3 && <Check className="h-5 w-5" />}
                 {checkoutStep === 4 && <Check className="h-5 w-5" />}
                 {checkoutStep === 1 && 'سلة التسوق'}
                 {checkoutStep === 2 && 'معلومات التوصيل'}
@@ -241,18 +239,17 @@ ${orderDetails}
               </h2>
               <button
                 onClick={toggleCart}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
               >
-                <X className="h-6 w-6" />
+                <X className="h-6 w-6 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
-            {/* Progress Bar */}
             <div className="flex justify-between mt-4">
               {[1, 2, 3, 4].map((step) => (
                 <div
                   key={step}
                   className={`h-2 flex-1 mx-1 rounded ${
-                    step <= checkoutStep ? 'bg-black' : 'bg-gray-200'
+                    step <= checkoutStep ? 'bg-black dark:bg-white' : 'bg-gray-200 dark:bg-gray-700'
                   }`}
                 />
               ))}
@@ -261,25 +258,26 @@ ${orderDetails}
 
           {renderStep()}
 
-          {/* Footer */}
           {items.length > 0 && (
-            <div className="border-t p-4 bg-white">
+            <div className="border-t dark:border-gray-800 p-4 bg-white dark:bg-gray-900 mt-auto">
               <div className="flex justify-between items-center mb-4">
-                <span className="text-gray-600">الإجمالي:</span>
-                <span className="text-xl font-bold">{total} ج.م</span>
+                <span className="text-gray-700 dark:text-gray-300">الإجمالي:</span>
+                <span className="text-xl font-bold text-gray-900 dark:text-white">
+                  {total.toFixed(2)} ج.م
+                </span>
               </div>
               {checkoutStep < 4 ? (
                 <button
-                  onClick={() => setCheckoutStep(prev => prev + 1)}
+                  onClick={() => setCheckoutStep((prev) => prev + 1)}
                   disabled={checkoutStep === 2 && !isDeliveryInfoComplete()}
-                  className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-black dark:bg-white text-white dark:text-black py-3 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   متابعة
                 </button>
               ) : (
                 <button
                   onClick={handleCheckout}
-                  className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+                  className="w-full bg-black dark:bg-white text-white dark:text-black py-3 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
                 >
                   <ShoppingBag className="h-5 w-5" />
                   إتمام الطلب عبر واتساب
@@ -287,8 +285,8 @@ ${orderDetails}
               )}
               {checkoutStep > 1 && (
                 <button
-                  onClick={() => setCheckoutStep(prev => prev - 1)}
-                  className="w-full mt-2 py-3 text-gray-600 hover:text-gray-800 transition-colors"
+                  onClick={() => setCheckoutStep((prev) => prev - 1)}
+                  className="w-full mt-2 py-3 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
                 >
                   رجوع
                 </button>
